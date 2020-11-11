@@ -53,7 +53,7 @@ class DiscordHandler extends AbstractProcessingHandler
         $log = [
             'embeds' => [
                 [
-                    'title' => 'Log from ' . $this->name,
+                    'title' => 'Log entry - '.now()->format('d.m.Y H:i:s'),
                     // Use CSS for the formatter, as it provides the most distinct colouring.
                     'description' => "```css\n" . substr($content, 0, 2030). '```',
                     'color' => 0xE74C3C,
@@ -64,11 +64,16 @@ class DiscordHandler extends AbstractProcessingHandler
         // Tag a role if configured for it
         if($this->roleId) $log['content'] = "<@&" . $this->roleId . ">";
 
-
-        // Send it to discord
-        $this->guzzle->request('POST', $this->webhook, [
-            RequestOptions::JSON => $log,
-        ]);
+	if($this->webhook) {
+		try {
+		    // Send it to discord
+		    $this->guzzle->request('POST', $this->webhook, [
+			RequestOptions::JSON => $log,
+		    ]);
+		} catch (\Exception $e) {
+		    //silently fail
+		}
+	}
     }
 }
 
