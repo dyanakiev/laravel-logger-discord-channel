@@ -9,7 +9,7 @@ composer require dyanakiev/laravel-logger-discord-channel
 
 ## Usage
 
-Add the new discord channel type in your `config/logging.php` configuration file, find the channels section and add the discord array within
+1. Add the new discord channel type in your `config/logging.php` configuration file, find the channels section and add the discord array within
 
 ```php
 'channels' => [
@@ -25,6 +25,8 @@ Add the new discord channel type in your `config/logging.php` configuration file
         ],
 ],
 ```
+2. Add the new discord channel inside the `stack` channel, its recommended to set `LOG_CHANNEL` to `stack` so you can still have your daily logs when running in production
+3. Customize the package settings either directly in the config or in the .env file
 
 ## Note
 You may need to clear cache after installation if you get `laravel.EMERGENCY: Unable to create configured logger. ... Log [discord] is not defined.` with
@@ -36,5 +38,6 @@ Dont forget to cache the config again after clearing cache if ran on production 
 php artisan config:cache
 ```
 
-## Example log
-@todo add picture
+## Example logs
+![demo-error-imessage](./.github/demo-error-message.png)
+![demo-info-imessage](./.github/demo-info-message.png)
