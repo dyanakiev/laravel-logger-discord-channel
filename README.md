@@ -1,4 +1,4 @@
-# Laravel Logger - Discord Channel (up-to-date)
+# Laravel Logger - Discord Channel (updated frequently)
 ###### A Discord based Monolog driver for Laravel
 
 ## Install
