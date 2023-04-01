@@ -3,7 +3,7 @@
 
 ## Install
 ```bash
-composer require kabbouchi/laravel-logger-discord-channel
+composer require dyanakiev/laravel-logger-discord-channel
 
 ```
 
@@ -29,5 +29,7 @@ You may need to clear cache after installation if you get `laravel.EMERGENCY: Un
 ```bash
 php artisan config:clear
 ```
-
-
+Dont forget to cache the config again after clearing cache if ran on production :)
+```bash
+php artisan config:cache
+```
