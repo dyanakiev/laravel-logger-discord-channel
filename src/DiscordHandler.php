@@ -7,36 +7,29 @@ use GuzzleHttp\RequestOptions;
 use Monolog\Formatter\LineFormatter;
 use \Monolog\Logger;
 use \Monolog\Handler\AbstractProcessingHandler;
+use Psr\Log\LogLevel;
 
 class DiscordHandler extends AbstractProcessingHandler
 {
-    private $initialized = false;
     private $guzzle;
-
-    private $name;
-    private $subname;
-
+    private $suffix;
     private $webhook;
-    private $statement;
-    private $roleId;
+    private $message;
+    private $context;
 
-	/**
-	 * MonologDiscordHandler constructor.
-	 * @param $webhook
-	 * @param $name
-	 * @param string $subname
-	 * @param int $level
-	 * @param bool $bubble
-	 * @param null $roleId
-	 */
-    public function __construct($webhook, $name, $subname = '', $level = Logger::DEBUG, $bubble = true, $roleId = null)
+    /**
+     * MonologDiscordHandler constructor.
+     * @param array $config
+     */
+    public function __construct($config)
     {
-        $this->name = $name;
-        $this->subname = $subname;
+        $this->suffix = $config['suffix'] ?? '';
         $this->guzzle = new \GuzzleHttp\Client();
-		$this->webhook = $webhook;
-		$this->roleId = $roleId;
-        parent::__construct($level, $bubble);
+        $this->webhook = $config['webhook'] ?? false;
+        $this->message = $config['message'] ?? false;
+        $this->context = $config['context'] ?? false;
+        parent::__construct($config['level'] ?? 'debug', $this->bubble);
+
     }
 
     /**
@@ -45,35 +38,99 @@ class DiscordHandler extends AbstractProcessingHandler
      */
     protected function write($record): void
     {
-        $formatter = new LineFormatter(null, null, true, true);
-        $formatter->includeStacktraces();
-        $content = $formatter->format($record);
+        $message = new LineFormatter('%message%', null, true, true);
+        $message = $message->format($record);
 
-        // Set up the formatted log
-        $log = [
-            'embeds' => [
-                [
-                    'title' => 'Log entry - '.now()->format('d.m.Y H:i:s'),
-                    // Use CSS for the formatter, as it provides the most distinct colouring.
-                    'description' => "```css\n" . substr($content, 0, 2030). '```',
-                    'color' => 0xE74C3C,
-                ],
-            ],
+        if($this->context) {
+            $stacktrace = new LineFormatter('%context% %extra%', null, true, true);
+            $stacktrace->includeStacktraces();
+            $stacktrace = $stacktrace->format($record);
+        }
+
+        // Add emoji based on the error level
+        switch ($record->level->toPsrLogLevel()) {
+            case LogLevel::NOTICE:
+                $emoji = ':helicopter:';
+                break;
+            case LogLevel::WARNING:
+                $emoji = ':warning:';
+                break;
+            case LogLevel::INFO:
+                $emoji = ':information_source:';
+                break;
+            case LogLevel::DEBUG:
+                $emoji = ':zap:';
+                break;
+            default:
+                $emoji = ':boom:';
+                break;
+        }
+
+        // Add fields
+        $fields = [];
+
+        $request = request();
+
+        // Add the request url if any
+        $request_url = $request?->fullUrl() ?? false;
+        if ($request_url && !app()->runningInConsole()) {
+            $fields[] = [
+                'name' => 'Visited URL',
+                'value' => $request?->fullUrl()
+            ];
+        }
+
+        // Add the logged in user id if any
+        $user_id = $record->context['userId'] ?? false;
+        if ($user_id) {
+            $fields[] = [
+                'name' => 'User ID',
+                'value' => $user_id
+            ];
+        }
+
+        // Add the file path if exception
+        if(isset($record->context['exception'])) {
+            $file_path = $record->context['exception']->getFile() ?? false;
+            $file_line = $record->context['exception']->getLine() ?? 'n/a';
+
+            if ($file_path) {
+                $fields[] = [
+                    'name' => 'File path',
+                    'value' => '`' . str($file_path)->replace(base_path(), '') . '` at line **' . $file_line . '**'
+                ];
+            }
+        }
+
+        // Set embeds
+        $log['embeds'][] = [
+            'title' => '**[' . now()->format('d.m.Y H:i:s') . ']** '.str($record->level->getName())->lower()->ucfirst().' ' . $emoji.' '.$this->suffix,
+            'description' => "```css\n" . str($message)->limit('4000') . '```',
+            'color' => 0xE74C3C,
+            'fields' => $fields
         ];
 
-        // Tag a role if configured for it
-        if($this->roleId) $log['content'] = "<@&" . $this->roleId . ">";
+        // Add full context
+        if($this->context === true && $stacktrace) {
+            $log['embeds'][] = [
+                'title' => 'Full context',
+                'description' => "```css\n" . str($stacktrace)->limit('4000') . '```',
+                'color' => 0xE74C3C,
+            ];
+        }
 
-	if($this->webhook) {
-		try {
-		    // Send it to discord
-		    $this->guzzle->request('POST', $this->webhook, [
-			RequestOptions::JSON => $log,
-		    ]);
-		} catch (\Exception $e) {
-		    //silently fail
-		}
-	}
+        // Add custom message
+        if ($this->message) $log['content'] = $this->message;
+
+        if ($this->webhook) {
+            try {
+                // Send it to discord
+                $this->guzzle->request('POST', $this->webhook, [
+                    RequestOptions::JSON => $log,
+                ]);
+            } catch (\Exception $e) {
+                //silently fail better than killing the whole app
+            }
+        }
     }
 }
-
