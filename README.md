@@ -16,10 +16,10 @@ Add the new driver type in your `config/logging.php` configuration
     'discord' => [
         'driver' => 'custom',
         'via' => dyanakiev\LoggerDiscordChannel\DiscordLogger::class,
-        'webhook' => 'https://discordapp.com/api/webhooks/.....',
-        'level' => 'DEBUG',
-        'role_id' => null, // role to tag in the error,
-        'environment' => 'production', // or ['production', 'staging', 'local']
+        'webhook' => env('DISCORD_LOG_WEBHOOK', false), // e.g. https://discordapp.com/api/webhooks/...
+        'level' => env('DISCORD_LOG_LEVEL','debug'), // You can choose from: emergency, alert, critical, error, warning, notice, info and debug
+        'role_id' => env('DISCORD_LOG_TAG_ROLE_ID', false), // Tag a discord role
+        'environment' => env('DISCORD_LOG_ENVIRONMENT','production') // Enable logging only for environment ['production', 'staging', 'local']
     ],
 ],
 ```
@@ -33,3 +33,6 @@ Dont forget to cache the config again after clearing cache if ran on production 
 ```bash
 php artisan config:cache
 ```
+
+## Example log
+@todo add picture
