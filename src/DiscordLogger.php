@@ -1,6 +1,6 @@
 <?php
 
-namespace KABBOUCHI\LoggerDiscordChannel;
+namespace dyanakiev\LoggerDiscordChannel;
 
 use Monolog\Logger;
 
