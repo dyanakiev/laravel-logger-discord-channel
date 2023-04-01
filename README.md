@@ -18,7 +18,7 @@ Add the new discord channel type in your `config/logging.php` configuration file
         'via' => dyanakiev\LoggerDiscordChannel\DiscordLogger::class,
         'webhook' => env('DISCORD_LOG_WEBHOOK', false), // e.g. https://discordapp.com/api/webhooks/...
         'level' => env('DISCORD_LOG_LEVEL', 'debug'), // You can choose from: emergency, alert, critical, error, warning, notice, info and debug
-        'environment' => env('DISCORD_LOG_ENVIRONMENT', 'production') // Enable logging only for environment ['production', 'staging', 'local']
+        'environment' => env('DISCORD_LOG_ENVIRONMENT', 'production'), // Enable logging only for environment ['production', 'staging', 'local']
         'role_id' => env('DISCORD_LOG_TAG_ROLE_ID', false), // Tag a discord role
     ],
 ],
