@@ -9,7 +9,11 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Georges KABBOUCHI",
+      "name": "Dimitar Yanakiev",
+      "email": "dimitar.d.yanakiev@gmail.com"
+    },
+    {
+      "name": "Georges KABBOUCHI (original)",
       "email": "georges.kabbouchi@gmail.com"
     }
   ],
@@ -23,12 +27,12 @@
   },
   "autoload": {
     "psr-4": {
-      "KABBOUCHI\\LoggerDiscordChannel\\": "src/"
+      "dyanakiev\\LoggerDiscordChannel\\": "src/"
     }
   },
   "config": {
     "sort-packages": true
   },
   "prefer-stable": true,
-  "minimum-stability": "dev"
+  "minimum-stability": "stable"
 }
