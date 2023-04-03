@@ -1,5 +1,6 @@
 # Laravel Logger - Discord Channel (updated frequently)
 ###### A Discord based Monolog driver for Laravel
+[![Latest Stable Version](http://poser.pugx.org/dyanakiev/laravel-logger-discord-channel/v)](https://packagist.org/packages/dyanakiev/laravel-logger-discord-channel) [![Total Downloads](http://poser.pugx.org/dyanakiev/laravel-logger-discord-channel/downloads)](https://packagist.org/packages/dyanakiev/laravel-logger-discord-channel) [![Daily Downloads](http://poser.pugx.org/dyanakiev/laravel-logger-discord-channel/d/daily)](https://packagist.org/packages/dyanakiev/laravel-logger-discord-channel) [![Latest Unstable Version](http://poser.pugx.org/dyanakiev/laravel-logger-discord-channel/v/unstable)](https://packagist.org/packages/dyanakiev/laravel-logger-discord-channel) [![License](http://poser.pugx.org/dyanakiev/laravel-logger-discord-channel/license)](https://packagist.org/packages/dyanakiev/laravel-logger-discord-channel) [![PHP Version Require](http://poser.pugx.org/dyanakiev/laravel-logger-discord-channel/require/php)](https://packagist.org/packages/dyanakiev/laravel-logger-discord-channel)
 
 ## Install
 ```bash
