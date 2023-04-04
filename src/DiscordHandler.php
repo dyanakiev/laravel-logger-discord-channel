@@ -46,9 +46,18 @@ class DiscordHandler extends AbstractProcessingHandler
             $stacktrace->includeStacktraces();
             $stacktrace = $stacktrace->format($record);
         }
+        
+        $logLevelPsr = false;
+        $logLevelName = '';
+        
+        if(isset($record->level)) {
+            $logLevelPsr = $record->level->toPsrLogLevel();
+            $logLevelName = $record->level->getName();
+        }
+        
 
         // Add emoji based on the error level
-        switch ($record->level->toPsrLogLevel()) {
+        switch ($logLevelPsr) {
             case LogLevel::NOTICE:
                 $emoji = ':helicopter:';
                 break;
@@ -104,7 +113,7 @@ class DiscordHandler extends AbstractProcessingHandler
 
         // Set embeds
         $log['embeds'][] = [
-            'title' => '**[' . now()->format('d.m.Y H:i:s') . ']** '.str($record->level->getName())->lower()->ucfirst().' ' . $emoji.' '.$this->suffix,
+            'title' => '**[' . now()->format('d.m.Y H:i:s') . ']** '.str($logLevelName)->lower()->ucfirst().' ' . $emoji.' '.$this->suffix,
             'description' => "```css\n" . str($message)->limit('4000') . '```',
             'color' => 0xE74C3C,
             'fields' => $fields
