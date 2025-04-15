@@ -8,6 +8,7 @@ use Monolog\Formatter\LineFormatter;
 use \Monolog\Logger;
 use \Monolog\Handler\AbstractProcessingHandler;
 use Psr\Log\LogLevel;
+use Carbon\Carbon;
 
 class DiscordHandler extends AbstractProcessingHandler
 {
@@ -115,6 +116,7 @@ class DiscordHandler extends AbstractProcessingHandler
         $log['embeds'][] = [
             'title' => '**[' . now()->format('d.m.Y H:i:s') . ']** '.str($logLevelName)->lower()->ucfirst().' ' . $emoji.' '.$this->suffix,
             'description' => "```css\n" . str($message)->limit('4000') . '```',
+            'timestamp' => Carbon::now()->format('Y-m-d\TH:i:sP'),
             'color' => 0xE74C3C,
             'fields' => $fields
         ];
